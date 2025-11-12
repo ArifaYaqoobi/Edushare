@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h3>{{ resource.title }}</h3>
+        <p class="text-muted">{{ resource.subject }} • {{ resource.grade }} • by {{ resource.owner.username }}</p>
+        <p>{{ resource.description }}</p>
+        {% if resource.uploaded_file %}
+          <a href="{{ resource.uploaded_file.url }}" class="btn btn-outline-primary">Download Resource</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <h5>Comments</h5>
+    <div>
+      {% for c in resource.comments.all %}
+        <div class="card mb-2"><div class="card-body"><strong>{{ c.user.username }}</strong> <small class="text-muted">{{ c.created_at }}</small><p>{{ c.text }}</p></div></div>
+      {% empty %}
+        <p class="text-muted">No comments yet.</p>
+      {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <form method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button class="btn btn-primary">Post comment</button>
+    </form>
+    {% else %}
+    <p><a href="{% url 'login' %}">Log in</a> to post a comment.</p>
+    {% endif %}
+  </div>
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h6>Resource details</h6>
+      <ul class="list-unstyled small">
+        <li><strong>Owner:</strong> {{ resource.owner.username }}</li>
+        <li><strong>Uploaded:</strong> {{ resource.created_at }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
